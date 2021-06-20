@@ -262,3 +262,207 @@ mysql> select distinct owner from pet;
 4 rows in set (0.00 sec)
 ```
 
+**排序：**
+
+根据某个字段进行排序使用关键字`order by`默认是升序
+
+```
+select name,birth from pet order by birth;
++----------+------------+
+| name     | birth      |
++----------+------------+
+| Buffy    | 1989-05-13 |
+| Fang     | 1990-08-27 |
+| Fluffy   | 1993-02-04 |
+| Claws    | 1994-03-17 |
+| Slim     | 1996-04-29 |
+| Whistler | 1997-12-09 |
+| Chirpy   | 1998-09-11 |
+| Bowser   | 2020-01-01 |
++----------+------------+
+8 rows in set (0.35 sec)
+```
+
+升序：`desc`
+
+降序：`asc`
+
+```
+select name,birth from pet order by birth asc;
++----------+------------+
+| name     | birth      |
++----------+------------+
+| Buffy    | 1989-05-13 |
+| Fang     | 1990-08-27 |
+| Fluffy   | 1993-02-04 |
+| Claws    | 1994-03-17 |
+| Slim     | 1996-04-29 |
+| Whistler | 1997-12-09 |
+| Chirpy   | 1998-09-11 |
+| Bowser   | 2020-01-01 |
++----------+------------+
+8 rows in set (0.00 sec)
+```
+
+多列排序：
+
+```
+select name,species,birth from pet order by species asc, birth desc;
++----------+---------+------------+
+| name     | species | birth      |
++----------+---------+------------+
+| Chirpy   | bird    | 1998-09-11 |
+| Whistler | bird    | 1997-12-09 |
+| Claws    | cat     | 1994-03-17 |
+| Fluffy   | cat     | 1993-02-04 |
+| Bowser   | dog     | 2020-01-01 |
+| Fang     | dog     | 1990-08-27 |
+| Buffy    | dog     | 1989-05-13 |
+| Slim     | snake   | 1996-04-29 |
++----------+---------+------------+
+8 rows in set (0.00 sec)
+```
+
+首先按照species的首字母顺序排序，再按照birth排序，故1996出现在最后的位置。
+
+**日期计算：**
+
+查询当前日期：
+
+```
+select curdate();
++------------+
+| curdate()  |
++------------+
+| 2021-06-20 |
++------------+
+1 row in set (0.34 sec)
+```
+
+获取年：`year()`参数是日期。
+
+```
+select year(curdate());
++-----------------+
+| year(curdate()) |
++-----------------+
+|            2021 |
++-----------------+
+1 row in set (0.00 sec)
+```
+
+```
+select year("2018-1-5");
++------------------+
+| year("2018-1-5") |
++------------------+
+|             2018 |
++------------------+
+1 row in set (0.00 sec)
+```
+
+获取月：`month()`参数是日期。
+
+```
+select month(curdate());
++------------------+
+| month(curdate()) |
++------------------+
+|                6 |
++------------------+
+1 row in set (0.00 sec)
+```
+
+获取日：`day()`参数是日期。
+
+```
+select day(curdate());
++----------------+
+| day(curdate()) |
++----------------+
+|             20 |
++----------------+
+1 row in set (0.00 sec)
+```
+
+计算岁数：`timestampdiff()`
+
+```
+select name,birth,curdate(),timestampdiff(year,birth,curdate()) as age from pet;
++----------+------------+------------+------+
+| name     | birth      | curdate()  | age  |
++----------+------------+------------+------+
+| Fluffy   | 1993-02-04 | 2021-06-20 |   28 |
+| Claws    | 1994-03-17 | 2021-06-20 |   27 |
+| Buffy    | 1989-05-13 | 2021-06-20 |   32 |
+| Fang     | 1990-08-27 | 2021-06-20 |   30 |
+| Bowser   | 2020-01-01 | 2021-06-20 |    1 |
+| Chirpy   | 1998-09-11 | 2021-06-20 |   22 |
+| Whistler | 1997-12-09 | 2021-06-20 |   23 |
+| Slim     | 1996-04-29 | 2021-06-20 |   25 |
++----------+------------+------------+------+
+8 rows in set (0.00 sec)
+```
+
+**null和not null值：**
+
+对一些字段类型进行检查，判断某些字段是否为NULL，或者non-null。
+
+```
+select name,birth from pet where death is not null;
++----------+------------+
+| name     | birth      |
++----------+------------+
+| Bowser   | 2020-01-01 |
+| Whistler | 1997-12-09 |
++----------+------------+
+2 rows in set (0.00 sec)
+```
+
+
+
+### 开放数据库到局域网
+
+MySQL 版本：8
+
+选择数据库
+
+```
+use mysql;
+```
+
+查看当前用户信息
+
+```
+mysql> select host,user from user;
++-----------+------------------+
+| host      | user             |
++-----------+------------------+
+| localhost | mysql.infoschema |
+| localhost | mysql.session    |
+| localhost | mysql.sys        |
+| localhost | root             |
++-----------+------------------+
+4 rows in set (0.00 sec)
+```
+
+应该更改host名称，使得任意IP可以访问数据库
+
+```
+update user set host = '%' where user = 'root';
+```
+
+刷新权限
+
+```
+flush privileges;
+```
+
+**客机连接数据据库**
+
+```
+mysql -h （主机IP地址） -P 3306 -u （主机用户名） -p（主机密码）
+```
+
+-p后面没有空格
+
